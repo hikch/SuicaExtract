@@ -7,7 +7,27 @@ const nodesSnapshot = document.evaluate(
     null
 );
 
+const ym = document.evaluate(
+    '//select[@name="specifyYearMonth"]/option[@selected]/text()',
+    document,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE
+).singleNodeValue.nodeValue.replace('/', '-')
+
+let yy = ym.split("-")[0]
+const m = ym.split("-")[1]
+
+const d = document.evaluate(
+    '//select[@name="specifyDay"]/option[@selected]/text()',
+    document,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE
+).singleNodeValue.nodeValue
+
+const fileName = `suica-${ym}-${d}.json`;
 const table = [];
+let current_md = m + "/" + d
+
 for ( var i=1 ; i < nodesSnapshot.snapshotLength; i++ )
 {
     row = {};
@@ -19,25 +39,17 @@ for ( var i=1 ; i < nodesSnapshot.snapshotLength; i++ )
     row.placeOfUse2 = item.children[4].innerText;
     row.balance = item.children[5].innerText;
     row.difference = item.children[6].innerText;
+
+    if (current_md < row.date) {
+        yy = yy -1
+    }
+    row.date_full = `${yy}/${row.date}`
+    current_md = row.date
+
     table.push(row);
+    console.log(row)
 }
 const jsonData = JSON.stringify(table);
-
-const ym = document.evaluate(
-    '//select[@name="specifyYearMonth"]/option[@selected]/text()',
-    document,
-    null,
-    XPathResult.FIRST_ORDERED_NODE_TYPE
-).singleNodeValue.nodeValue.replace('/', '-')
-
-const d = document.evaluate(
-    '//select[@name="specifyDay"]/option[@selected]/text()',
-    document,
-    null,
-    XPathResult.FIRST_ORDERED_NODE_TYPE
-).singleNodeValue.nodeValue
-
-const fileName = `suica-${ym}-${d}.json`;
 
 const link = document.createElement("a");
 link.href = "data:text/plain," + encodeURIComponent(jsonData);

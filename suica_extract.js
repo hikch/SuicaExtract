@@ -12,7 +12,7 @@ const ym = document.evaluate(
     document,
     null,
     XPathResult.FIRST_ORDERED_NODE_TYPE
-).singleNodeValue.nodeValue.replace('/', '-')
+).singleNodeValue.nodeValue.replace('年', '-').replace('月', '')
 
 let yy = ym.split("-")[0]
 const m = ym.split("-")[1]
@@ -22,7 +22,7 @@ const d = document.evaluate(
     document,
     null,
     XPathResult.FIRST_ORDERED_NODE_TYPE
-).singleNodeValue.nodeValue
+).singleNodeValue.nodeValue.replace(' 日', '')
 
 const fileName = `suica-${ym}-${d}.json`;
 const table = [];
@@ -32,13 +32,13 @@ for ( var i=1 ; i < nodesSnapshot.snapshotLength; i++ )
 {
     row = {};
     item = nodesSnapshot.snapshotItem(i)
-    row.date = item.children[0].innerText;
-    row.type1 = item.children[1].innerText;
-    row.placeOfUse1 = item.children[2].innerText;
-    row.type2 = item.children[3].innerText;
-    row.placeOfUse2 = item.children[4].innerText;
-    row.balance = item.children[5].innerText;
-    row.difference = item.children[6].innerText;
+    row.date = item.children[1].innerText;
+    row.type1 = item.children[2].innerText;
+    row.placeOfUse1 = item.children[3].innerText;
+    row.type2 = item.children[4].innerText;
+    row.placeOfUse2 = item.children[5].innerText;
+    row.balance = item.children[6].innerText;
+    row.difference = item.children[7].innerText;
 
     if (current_md < row.date) {
         yy = yy -1
